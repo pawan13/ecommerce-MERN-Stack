@@ -1,13 +1,13 @@
 import React,{useEffect, useState}from 'react';
 import {auth} from "../../firebase";
-import { sendSignInLinkToEmail } from "firebase/auth";
 import {toast} from "react-toastify";
-import { useNavigate } from 'react-router-dom';
+import { sendPasswordResetEmail } from 'firebase/auth';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-export default function Register() {
-  const [email, setEmail] = useState("Pawanshiwakoti13@gmail.com")
 
+export default function ForgotPassword() {
+  const [email, setEmail] = useState("")
   const navigate = useNavigate()
   const {user} = useSelector((state)=>state.user)
 
@@ -15,23 +15,19 @@ export default function Register() {
    if(user && user.uid) navigate("/")
   }, [user, navigate])
 
-
     const handleOnSubmit = async(e)=>{
         e.preventDefault()
 
         const config= {
-            url: process.env.REACT_APP_REGISTER_REDIRECT_URL,
+            url: process.env.REACT_APP_PASSWORD_REDIRECT_URL,
             handleCodeInApp: true
         }
-        await sendSignInLinkToEmail(auth, email, config)
+        await sendPasswordResetEmail(auth, email, config)
         .then(() => {
+            setEmail('')
           // The link was successfully sent. Inform the user.
-          toast.success(`Email is send to the ${email}. Please click the link to complete the registration.`)
-          // Save the email locally so you don't need to ask the user for it again
-          // if they open the link on the same device.
-          window.localStorage.setItem('emailForSignIn', email);
-          // ...
-          setEmail('')
+          toast.success(`Email is send to the ${email}. Please click the link to complete the password reset.`)
+          
         })
         .catch((error) => {
           const errorMessage = error.message;
@@ -39,7 +35,7 @@ export default function Register() {
         });
     }
 
-    const registrationForm=()=><form onSubmit={handleOnSubmit}>
+    const ForgotPasswordForm=()=><form onSubmit={handleOnSubmit}>
     <input
     type='email'
     className='form-control'
@@ -47,14 +43,14 @@ export default function Register() {
     onChange={e=>setEmail(e.target.value)}
     autoFocus
     />
-    <button type='submit' className="btn btn-raised btn-info mt-3" >Register</button>
+    <button type='submit' className="btn btn-raised btn-info mt-3" >Submit</button>
     </form>
   return (
     <div className="container p-5">
         <div className="row">
             <div className="col-md-6 offset-md-3">
-                <h4>Register</h4>
-                {registrationForm()}
+                <h4>Password Reset Email</h4>
+                {ForgotPasswordForm()}
             </div>
         </div>
     </div>
